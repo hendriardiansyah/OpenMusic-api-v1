@@ -48,7 +48,7 @@ class SongService {
       throw new NotFoundError('Gagal memperbarui lagu. Id tidak ditemukan');
     }
 
-    const updateAt = new Date().toISOString();
+    const updatedAt = new Date().toISOString();
 
     this._songs[index] = {
       ...this._songs[index],
@@ -57,7 +57,7 @@ class SongService {
       performer,
       genre,
       duration,
-      updateAt,
+      updatedAt,
     };
   }
 

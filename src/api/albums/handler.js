@@ -7,7 +7,6 @@ class AlbumHandler {
       this._validator = validator;
   
       this.postAlbumHandler = this.postAlbumHandler.bind(this);
-      this.getAlbumsHandler = this.getAlbumsHandler.bind(this);
       this.getAlbumByIdHandler = this.getAlbumByIdHandler.bind(this);
       this.putAlbumByIdHandler = this.putAlbumByIdHandler.bind(this);
       this.deleteAlbumByIdHandler = this.deleteAlbumByIdHandler.bind(this);
@@ -44,29 +43,18 @@ class AlbumHandler {
           message: 'Maaf, terjadi kegagalan pada server kami.',
         });
         response.code(500);
-        console.error(error);
         return response;
       }
     }
   
-    async getAlbumsHandler() {
-      const songs = await this._service.getAlbums();
-      return {
-        status: 'success',
-        data: {
-          songs,
-        },
-      };
-    }
-  
     async getAlbumByIdHandler(request, h) {
       try {
-        const { albumId } = request.params;
-        const album = await this._service.getAlbumById(albumId);
+        const { id } = request.params;
+        const album = await this._service.getAlbumById(id);
         return {
           status: 'success',
           data: {
-            song,
+            album,
           },
         };
       } catch (error) {
@@ -85,17 +73,17 @@ class AlbumHandler {
           message: 'Maaf, terjadi kegagalan pada server kami.',
         });
         response.code(500);
-        console.error(error);
         return response;
       }
     }
   
     async putAlbumByIdHandler(request, h) {
       try {
-        this._validator.validateSongPayload(request.payload);
-        const { albumId } = request.params;
+        this._validator.validateAlbumPayload(request.payload);
+        const { name, year } = request.params;
+        const { id } = request.params;
   
-        await this._service.editAlbumById(albumId, request.payload);
+        await this._service.editAlbumById(id, { name, year });
   
         return {
           status: 'success',
@@ -117,15 +105,14 @@ class AlbumHandler {
           message: 'Maaf, terjadi kegagalan pada server kami.',
         });
         response.code(500);
-        console.error(error);
         return response;
       }
     }
   
     async deleteAlbumByIdHandler(request, h) {
       try {
-        const { albumId } = request.params;
-        await this._service.deleteAlbumById(albumId);
+        const { id } = request.params;
+        await this._service.deleteAlbumById(id);
   
         return {
           status: 'success',
@@ -152,4 +139,6 @@ class AlbumHandler {
       }
     }
   }
+
+  module.exports = AlbumHandler;
   

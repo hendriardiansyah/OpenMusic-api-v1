@@ -2,20 +2,18 @@ const mapDBToModel = ({
     id,
     title,
     year,
-    performer,
     genre,
+    performer,
     duration,
-    inserted_at,
-    updated_at,
+    albumId,
   }) => ({
     id,
     title,
     year,
-    performer,
     genre,
+    performer,
     duration,
-    insertedAt: inserted_at,
-    updatedAt: updated_at,
+    albumid: albumId,
   });
   
   module.exports = { mapDBToModel };

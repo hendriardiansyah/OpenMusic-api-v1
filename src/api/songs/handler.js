@@ -15,9 +15,9 @@ class SongHandler {
   async postSongHandler(request, h) {
     try {
       this._validator.validateSongPayload(request.payload);
-      const { title = 'untitled', year, performer, genre, duration } = request.payload;
+      const { title, year, performer, genre, duration, albumId } = request.payload;
 
-      const songId = await this._service.addSong({ title, year, performer, genre, duration });
+      const songId = await this._service.addSong({ title, year, performer, genre, duration, albumId });
       const response = h.response({
         status: 'success',
         message: 'Lagu berhasil ditambahkan',
@@ -43,29 +43,44 @@ class SongHandler {
         message: 'Maaf, terjadi kegagalan pada server kami.',
       });
       response.code(500);
-      console.error(error);
       return response;
     }
   }
 
-  async getSongsHandler() {
-    const songs = await this._service.getSongs();
-    return {
+  async getSongsHandler(request, h) {
+    const { title, performer } = request.query;
+    let songs = await this._service.getSongs();
+
+    if (title !== undefined) {
+      songs = songs.filter((song) => song.title.toLowerCase().includes(title.toLowerCase()));
+    }
+
+    if (performer !== undefined) {
+      songs = songs.filter((song) => song.performer.toLowerCase()
+        .includes(performer.toLowerCase()));
+    }
+    const response = h.response({
       status: 'success',
       data: {
-        songs,
+        songs: songs.map((song) => ({
+          id: song.id,
+          title: song.title,
+          performer: song.performer,
+        })),
       },
-    };
+    });
+    response.code(200);
+    return response;
   }
 
   async getSongByIdHandler(request, h) {
     try {
-      const { songId } = request.params;
-      const song = await this._service.getSongById(songId);
+      const { id } = request.params;
+      const songId = await this._service.getSongById(id);
       return {
         status: 'success',
         data: {
-          song,
+          songId,
         },
       };
     } catch (error) {
@@ -84,7 +99,6 @@ class SongHandler {
         message: 'Maaf, terjadi kegagalan pada server kami.',
       });
       response.code(500);
-      console.error(error);
       return response;
     }
   }
@@ -92,9 +106,11 @@ class SongHandler {
   async putSongByIdHandler(request, h) {
     try {
       this._validator.validateSongPayload(request.payload);
-      const { songId } = request.params;
+      const {title, year, genre, performer, duration, albumId } = request.payload;
+      const { id } = request.params;
 
-      await this._service.editSongById(songId, request.payload);
+      await this._service.editSongById(id, {title, year, genre, performer, duration, albumId
+      });
 
       return {
         status: 'success',
@@ -116,15 +132,14 @@ class SongHandler {
         message: 'Maaf, terjadi kegagalan pada server kami.',
       });
       response.code(500);
-      console.error(error);
       return response;
     }
   }
 
   async deleteSongByIdHandler(request, h) {
     try {
-      const { songId } = request.params;
-      await this._service.deleteSongById(songId);
+      const { id } = request.params;
+      await this._service.deleteSongById(id);
 
       return {
         status: 'success',

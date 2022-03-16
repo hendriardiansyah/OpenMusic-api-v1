@@ -24,10 +24,10 @@ class AlbumsService {
     return result.rows[0].id;
   }
 
-  async getAlbumById(albumId) {
+  async getAlbumById(id) {
     const query = {
       text: 'SELECT * FROM albums WHERE id = $1',
-      values: [albumId],
+      values: [id],
     };
 
     const result = await this._pool.query(query);
@@ -50,10 +50,10 @@ class AlbumsService {
     }
   }
 
-  async deleteAlbumById(albumId) {
+  async deleteAlbumById(id) {
     const query = {
       text: 'DELETE FROM albums WHERE id = $1 RETURNING id',
-      values: [albumId],
+      values: [id],
     };
 
     const result = await this._pool.query(query);

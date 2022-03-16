@@ -55,7 +55,7 @@ class AlbumHandler {
         return {
           status: 'success',
           data: {
-            album,
+            album: album
           },
         };
       } catch (error) {
@@ -82,7 +82,7 @@ class AlbumHandler {
     async putAlbumByIdHandler(request, h) {
       try {
         this._validator.validateAlbumPayload(request.payload);
-        const { name, year } = request.params;
+        const { name, year } = request.payload;
         const { id } = request.params;
   
         await this._service.editAlbumById(id, { name, year });
